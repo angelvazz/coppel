@@ -1,0 +1,46 @@
+.month-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+}
+
+.month-form h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.month-form .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.month-form .form-group label {
+  font-size: 1rem;
+}
+
+.month-form .form-group input,
+.month-form .form-group select {
+  font-size: 1rem;
+  padding: 0.5rem;
+  border: none;
+  border-bottom: 2px solid #ccc;
+  width: 100%;
+}
+
+.month-form .form-group select {
+  height: 2.5rem;
+}
+
+.month-form .form-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.month-form .form-buttons button {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  margin: 0 0.5rem;
+}

@@ -1,0 +1,41 @@
+.all-workers {
+  margin: 2rem;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.form-buttons button {
+  padding: 0.5rem;
+  border: none;
+  background-color: #dcdcdc;
+  cursor: pointer;
+}
+
+.form-buttons button:hover {
+  background-color: #bfbfbf;
+}
