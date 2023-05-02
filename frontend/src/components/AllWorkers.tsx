@@ -14,20 +14,50 @@ type RoleOption = {
   label: string;
 };
 
+type SueldoMensual = {
+  sueldoBase: number;
+  bono: number;
+  sueldoEntregas: number;
+  sueldoBruto: number;
+  retencion: number;
+  sueldoNeto: number;
+  despensa: number;
+};
+
+interface MonthFormData {
+  numeroEmpleado: number | string;
+  nombreCompleto: string;
+  rol: string;
+  mes: {
+    enero: { entregas: number };
+    febrero: { entregas: number };
+    marzo: { entregas: number };
+    abril: { entregas: number };
+    mayo: { entregas: number };
+    junio: { entregas: number };
+    julio: { entregas: number };
+    agosto: { entregas: number };
+    septiembre: { entregas: number };
+    octubre: { entregas: number };
+    noviembre: { entregas: number };
+    diciembre: { entregas: number };
+  };
+}
+
 const MONTH_OPTIONS: MonthOption[] = [
   { value: '', label: '-- Todos los meses --' },
-  { value: 'Enero', label: 'Enero' },
-  { value: 'Febrero', label: 'Febrero' },
-  { value: 'Marzo', label: 'Marzo' },
-  { value: 'Abril', label: 'Abril' },
-  { value: 'Mayo', label: 'Mayo' },
-  { value: 'Junio', label: 'Junio' },
-  { value: 'Julio', label: 'Julio' },
-  { value: 'Agosto', label: 'Agosto' },
-  { value: 'Septiembre', label: 'Septiembre' },
-  { value: 'Octubre', label: 'Octubre' },
-  { value: 'Noviembre', label: 'Noviembre' },
-  { value: 'Diciembre', label: 'Diciembre' },
+  { value: 'enero', label: 'Enero' },
+  { value: 'febrero', label: 'Febrero' },
+  { value: 'marzo', label: 'Marzo' },
+  { value: 'abril', label: 'Abril' },
+  { value: 'mayo', label: 'Mayo' },
+  { value: 'junio', label: 'Junio' },
+  { value: 'julio', label: 'Julio' },
+  { value: 'agosto', label: 'Agosto' },
+  { value: 'septiembre', label: 'Septiembre' },
+  { value: 'octubre', label: 'Octubre' },
+  { value: 'noviembre', label: 'Noviembre' },
+  { value: 'diciembre', label: 'Diciembre' },
 ];
 
 const ROLE_OPTIONS: RoleOption[] = [
@@ -37,56 +67,77 @@ const ROLE_OPTIONS: RoleOption[] = [
   { value: 'Auxiliar', label: 'Auxiliar' },
 ];
 
-type Worker = {
-  numeroEmpleado: number;
-  nombreCompleto: string;
-  rol: string;
-  mes: {
-    nombre: string;
-    horasTrabajadas: number;
-    entregas: number;
-    pagoEntregas: number;
-    bonoHora: number;
-    retencionISR: number;
-    retencionAdicionalISR: number;
-    valesDespensa: number;
-    sueldoTotal: number;
-  }[];
-};
-
 type Filter = {
   month: string;
   role: string;
 };
 
 export const AllWorkers = () => {
-  const [workers, setWorkers] = useState<Worker[]>([]);
+  const [trabajadores, setTrabajadores] = useState<MonthFormData>([]);
   const [filter, setFilter] = useState<Filter>({
     month: '',
     role: '',
   });
 
   useEffect(() => {
-    const fetchWorkers = async () => {
-      const { data } = await axios.get(`${API_URL}/workers`);
-      setWorkers(data);
+    const fetchTrabajadores = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/workers`);
+        setTrabajadores(response.data);
+      } catch (error) {
+        console.error(error);
+      }
     };
-    fetchWorkers();
-  }, []);
+    fetchTrabajadores();
+  }, [filter]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFilter((filter) => ({
+    setFilter({
       ...filter,
-      [name]: value,
-    }));
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const filteredWorkers = workers.filter(
-    (worker) =>
-      (!filter.month || worker.mes.nombre === filter.month) &&
-      (!filter.role || worker.rol === filter.role)
-  );
+  const filteredTrabajadores = trabajadores.filter((trabajador) => {
+    if (
+      (filter.month === '' ||
+        trabajador.mes.some((mes) => mes.nombre === filter.month)) &&
+      (filter.role === '' || trabajador.rol === filter.role)
+    ) {
+      return true;
+    }
+    return false;
+  });
+
+  const calcularSueldoMensual = (
+    entregas: number,
+    rol: string,
+    sueldoBase: number
+  ): SueldoMensual => {
+    const horas = 8 * 6 * 4; // horas trabajadas en 4 semanas
+    let bonoHora = 0;
+    if (rol === 'Chofer') {
+      bonoHora = 10;
+    } else if (rol === 'Cargador') {
+      bonoHora = 5;
+    }
+    const sueldoEntregas = entregas * 5;
+    const sueldoBono = bonoHora * horas;
+    const sueldoBruto = sueldoBase + sueldoEntregas + sueldoBono;
+    const retencion =
+      sueldoBruto > 10000 ? sueldoBruto * 0.12 : sueldoBruto * 0.09;
+    const sueldoDespensa = sueldoBruto * 0.04;
+    const sueldoNeto = sueldoBruto - retencion + sueldoDespensa;
+    return {
+      sueldoBase,
+      bono: sueldoBono,
+      sueldoEntregas,
+      sueldoBruto,
+      retencion,
+      sueldoNeto,
+      despensa: sueldoDespensa,
+    };
+  };
 
   return (
     <div className="all-workers">
@@ -113,76 +164,56 @@ export const AllWorkers = () => {
             <th>Número de empleado</th>
             <th>Nombre</th>
             <th>Rol</th>
-            <th>Horas trabajadas</th>
-            <th>Pago por entregas</th>
-            <th>Pago por bonos</th>
-            <th>Retenciones</th>
-            <th>Vales de despensa</th>
-            <th>Sueldo total</th>
+            <th>Entregas por mes</th>
+            <th>Sueldo base</th>
+            <th>Bono</th>
+            <th>Despensa</th>
+            <th>Sueldo bruto</th>
+            <th>Retencion</th>
+            <th>Sueldo neto</th>
           </tr>
         </thead>
         <tbody>
-          {filteredWorkers.map((worker) => (
-            <tr key={worker.numeroEmpleado}>
-              <td>{worker.numeroEmpleado}</td>
-              <td>{worker.nombreCompleto}</td>
-              <td>{worker.rol}</td>
-              <td>
-                {worker.mes.length > 0
-                  ? worker.mes.reduce(
-                      (acc, curr) => acc + curr.horasTrabajadas,
-                      0
-                    )
-                  : 0}
-              </td>
-              <td>
-                {worker.mes.length > 0
-                  ? worker.mes
-                      .reduce(
-                        (acc, curr) => acc + curr.entregas * curr.pagoEntregas,
-                        0
-                      )
-                      .toFixed(2)
-                  : 0}
-              </td>
-              <td>
-                {worker.mes.length > 0
-                  ? worker.mes
-                      .reduce(
-                        (acc, curr) =>
-                          acc + curr.horasTrabajadas * curr.bonoHora,
-                        0
-                      )
-                      .toFixed(2)
-                  : 0}
-              </td>
-              <td>
-                {worker.mes.length > 0
-                  ? worker.mes
-                      .reduce(
-                        (acc, curr) =>
-                          acc + curr.retencionISR + curr.retencionAdicionalISR,
-                        0
-                      )
-                      .toFixed(2)
-                  : 0}
-              </td>
-              <td>
-                {worker.mes.length > 0
-                  ? worker.mes
-                      .reduce((acc, curr) => acc + curr.valesDespensa, 0)
-                      .toFixed(2)
-                  : 0}
-              </td>
-              <td>
-                {worker.mes.length > 0
-                  ? worker.mes
-                      .reduce((acc, curr) => acc + curr.sueldoTotal, 0)
-                      .toFixed(2)
-                  : 0}
-              </td>
-            </tr>
-          ))}
+          {filter.month !== '' &&
+            filteredTrabajadores.map((worker) => {
+              const monthData = worker.mes.find(
+                (m) => m.nombre === filter.month
+              );
+              const {
+                sueldoBase,
+                bono,
+                sueldoEntregas,
+                sueldoBruto,
+                retencion,
+                sueldoNeto,
+                despensa,
+              } = calcularSueldoMensual(
+                monthData?.entregas ?? 0,
+                worker.rol,
+                5760
+              );
+
+              return (
+                <tr key={worker.numeroEmpleado}>
+                  <td>{worker.numeroEmpleado}</td>
+                  <td>{worker.nombreCompleto}</td>
+                  <td>{worker.rol}</td>
+                  <td>
+                    {monthData ? (
+                      <span key={monthData.nombre}>{monthData.entregas}</span>
+                    ) : (
+                      <span>-</span>
+                    )}
+                  </td>
+                  <td>${sueldoBase.toFixed(2)}</td>
+                  <td>${bono.toFixed(2)}</td>
+                  <td>${despensa.toFixed(2)}</td>
+                  <td>${sueldoBruto.toFixed(2)}</td>
+                  <td>${retencion.toFixed(2)}</td>
+                  <td>${sueldoNeto.toFixed(2)}</td>
+                </tr>
+              );
+            })}
         </tbody>
       </table>
     </div>

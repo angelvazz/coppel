@@ -32,9 +32,10 @@ app.get('/workers', async (req, res) => {
     console.log('GET /workers');
     const trabajadores = await Trabajador.find({}, '-_id -__v');
     const trabajadoresConMeses = trabajadores.map((trabajador) => {
-      const meses = trabajador.mes.reduce((acc, mes) => {
-        return { ...acc, [mes.nombre]: mes };
-      }, {});
+      const meses = Object.keys(trabajador.mes).map((nombre) => ({
+        nombre,
+        ...trabajador.mes[nombre],
+      }));
       return { ...trabajador.toObject(), mes: meses };
     });
     res.send(trabajadoresConMeses);
@@ -61,23 +62,31 @@ app.get('/worker/:id', async (req, res) => {
 app.post('/newWorker', async (req, res) => {
   try {
     console.log('POST /newWorker', req.body);
-    const trabajador = new Trabajador(req.body);
+    const { numeroEmpleado, nombreCompleto, rol } = req.body;
+    const trabajador = new Trabajador({ numeroEmpleado, nombreCompleto, rol });
     await trabajador.save();
-    res.status(201).send(trabajador);
+    console.log(trabajador);
+    res.json({ status: 'Creado' });
   } catch (error) {
     console.error(error);
     res.status(400).send(error);
   }
 });
 
-app.put('/worker/:numeroEmpleado', async (req, res) => {
+app.patch('/worker/:numeroEmpleado', async (req, res) => {
   const { numeroEmpleado } = req.params;
-  const { mes, ...rest } = req.body;
+  const { mes } = req.body;
+  const monthName = Object.keys(mes)[0];
+  const updatedEntregas = mes[monthName].entregas;
 
   try {
     const worker = await Trabajador.findOneAndUpdate(
       { numeroEmpleado },
-      { $set: { [`meses.${mes}`]: rest } },
+      {
+        $set: {
+          [`mes.${monthName}.entregas`]: updatedEntregas,
+        },
+      },
       { new: true }
     );
 

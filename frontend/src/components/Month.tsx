@@ -4,146 +4,6 @@ import './css/Month.css';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-type MonthFormData = {
-  numeroEmpleado: number | string;
-  nombreCompleto: string;
-  rol: string;
-  mes: {
-    enero: {
-      nombre: string;
-      horasTrabajadas: number;
-      entregas: number | string;
-      pagoEntregas: number;
-      bonoHora: number;
-      retencionISR: number;
-      retencionAdicionalISR: number;
-      valesDespensa: number;
-      sueldoTotal: number;
-    };
-    febrero: {
-      nombre: string;
-      horasTrabajadas: number;
-      entregas: number | string;
-      pagoEntregas: number;
-      bonoHora: number;
-      retencionISR: number;
-      retencionAdicionalISR: number;
-      valesDespensa: number;
-      sueldoTotal: number;
-    };
-    marzo: {
-      nombre: string;
-      horasTrabajadas: number;
-      entregas: number | string;
-      pagoEntregas: number;
-      bonoHora: number;
-      retencionISR: number;
-      retencionAdicionalISR: number;
-      valesDespensa: number;
-      sueldoTotal: number;
-    };
-    abril: {
-      nombre: string;
-      horasTrabajadas: number;
-      entregas: number | string;
-      pagoEntregas: number;
-      bonoHora: number;
-      retencionISR: number;
-      retencionAdicionalISR: number;
-      valesDespensa: number;
-      sueldoTotal: number;
-    };
-    mayo: {
-      nombre: string;
-      horasTrabajadas: number;
-      entregas: number | string;
-      pagoEntregas: number;
-      bonoHora: number;
-      retencionISR: number;
-      retencionAdicionalISR: number;
-      valesDespensa: number;
-      sueldoTotal: number;
-    };
-    junio: {
-      nombre: string;
-      horasTrabajadas: number;
-      entregas: number | string;
-      pagoEntregas: number;
-      bonoHora: number;
-      retencionISR: number;
-      retencionAdicionalISR: number;
-      valesDespensa: number;
-      sueldoTotal: number;
-    };
-    julio: {
-      nombre: string;
-      horasTrabajadas: number;
-      entregas: number | string;
-      pagoEntregas: number;
-      bonoHora: number;
-      retencionISR: number;
-      retencionAdicionalISR: number;
-      valesDespensa: number;
-      sueldoTotal: number;
-    };
-    agosto: {
-      nombre: string;
-      horasTrabajadas: number;
-      entregas: number | string;
-      pagoEntregas: number;
-      bonoHora: number;
-      retencionISR: number;
-      retencionAdicionalISR: number;
-      valesDespensa: number;
-      sueldoTotal: number;
-    };
-    septiembre: {
-      nombre: string;
-      horasTrabajadas: number;
-      entregas: number | string;
-      pagoEntregas: number;
-      bonoHora: number;
-      retencionISR: number;
-      retencionAdicionalISR: number;
-      valesDespensa: number;
-      sueldoTotal: number;
-    };
-    octubre: {
-      nombre: string;
-      horasTrabajadas: number;
-      entregas: number | string;
-      pagoEntregas: number;
-      bonoHora: number;
-      retencionISR: number;
-      retencionAdicionalISR: number;
-      valesDespensa: number;
-      sueldoTotal: number;
-    };
-    noviembre: {
-      nombre: string;
-      horasTrabajadas: number;
-      entregas: number | string;
-      pagoEntregas: number;
-      bonoHora: number;
-      retencionISR: number;
-      retencionAdicionalISR: number;
-      valesDespensa: number;
-      sueldoTotal: number;
-    };
-    diciembre: {
-      nombre: string;
-      horasTrabajadas: number;
-      entregas: number | string;
-      pagoEntregas: number;
-      bonoHora: number;
-      retencionISR: number;
-      retencionAdicionalISR: number;
-      valesDespensa: number;
-      sueldoTotal: number;
-    };
-  };
-};
-
 const months = [
   { value: 'enero', label: 'Enero' },
   { value: 'febrero', label: 'Febrero' },
@@ -159,23 +19,48 @@ const months = [
   { value: 'diciembre', label: 'Diciembre' },
 ];
 
+interface MonthFormData {
+  numeroEmpleado: number | string;
+  nombreCompleto: string;
+  rol: string;
+  mes: {
+    enero: { entregas: number };
+    febrero: { entregas: number };
+    marzo: { entregas: number };
+    abril: { entregas: number };
+    mayo: { entregas: number };
+    junio: { entregas: number };
+    julio: { entregas: number };
+    agosto: { entregas: number };
+    septiembre: { entregas: number };
+    octubre: { entregas: number };
+    noviembre: { entregas: number };
+    diciembre: { entregas: number };
+  };
+}
+
 export function Month() {
   const [formData, setFormData] = useState<MonthFormData>({
     numeroEmpleado: '',
     nombreCompleto: '',
     rol: '',
     mes: {
-      nombre: '',
-      horasTrabajadas: 0,
-      entregas: '',
-      pagoEntregas: 0,
-      bonoHora: 0,
-      retencionISR: 0,
-      retencionAdicionalISR: 0,
-      valesDespensa: 0,
-      sueldoTotal: 0,
+      enero: { entregas: 0 },
+      febrero: { entregas: 0 },
+      marzo: { entregas: 0 },
+      abril: { entregas: 0 },
+      mayo: { entregas: 0 },
+      junio: { entregas: 0 },
+      julio: { entregas: 0 },
+      agosto: { entregas: 0 },
+      septiembre: { entregas: 0 },
+      octubre: { entregas: 0 },
+      noviembre: { entregas: 0 },
+      diciembre: { entregas: 0 },
     },
   });
+
+  const [selectedMonthName, setSelectedMonthName] = useState('');
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -183,198 +68,64 @@ export function Month() {
     const { name, value } = e.target;
 
     if (name === 'mes') {
-      // Actualizar los valores de los demás inputs en base al mes seleccionado
-      const selectedMonthName = value;
-      const selectedMonthData = formData.mesAnual[selectedMonthName];
-
-      const updatedFormData = {
-        numeroEmpleado: formData.numeroEmpleado,
-        nombreCompleto: formData.nombreCompleto,
-        rol: selectedMonthData.rol,
+      setSelectedMonthName(value);
+      setFormData((formData) => ({
+        ...formData,
         mes: {
-          nombre: selectedMonthName,
-          horasTrabajadas: selectedMonthData.horasTrabajadas,
-          entregas: selectedMonthData.entregas,
-          pagoEntregas: selectedMonthData.pagoEntregas,
-          bonoHora: selectedMonthData.bonoHora,
-          retencionISR: selectedMonthData.retencionISR,
-          retencionAdicionalISR: selectedMonthData.retencionAdicionalISR,
-          valesDespensa: selectedMonthData.valesDespensa,
-          sueldoTotal: selectedMonthData.sueldoTotal,
+          ...formData.mes,
+          [value]: { entregas: 0 },
         },
-      };
-
-      setFormData(updatedFormData);
+      }));
     } else {
-      // Actualizar el estado del formulario en base al input que ha cambiado
-      let horasTrabajadas = formData.mes.horasTrabajadas;
-      let entregas = formData.mes.entregas;
-      let rol = formData.rol;
-      let bonoHora = 0;
-
-      switch (formData.rol) {
-        case 'Chofer':
-          bonoHora = 10;
-          break;
-        case 'Cargador':
-          bonoHora = 5;
-          break;
-        default:
-          bonoHora = 0;
-          break;
-      }
-
-      if (name === 'mes.entregas') {
-        entregas = Number(value);
-        // Actualizar el valor de entregas en el mes seleccionado
-        const updatedMes = {
-          ...formData.mesAnual[formData.mes.nombre],
-          entregas: Number(value),
-        };
-        const updatedMeses = {
-          ...formData.mesAnual,
-          [formData.mes.nombre]: updatedMes,
-        };
-        setFormData((formData) => ({
-          ...formData,
-          mes: {
-            ...formData.mes,
-            entregas: Number(value),
-          },
-          mesAnual: updatedMeses,
-        }));
-      } else if (name === 'mes.horasTrabajadas') {
-        horasTrabajadas = Number(value);
-        // Actualizar el valor de horas trabajadas en el mes seleccionado
-        const updatedMes = {
-          ...formData.mesAnual[formData.mes.nombre],
-          horasTrabajadas: Number(value),
-        };
-        const updatedMeses = {
-          ...formData.mesAnual,
-          [formData.mes.nombre]: updatedMes,
-        };
-        setFormData((formData) => ({
-          ...formData,
-          mes: {
-            ...formData.mes,
-            horasTrabajadas: Number(value),
-          },
-          mesAnual: updatedMeses,
-        }));
-      } else if (name === 'rol') {
-        rol = value;
-        // Actualizar el valor de rol en el mes seleccionado
-        const updatedMes = {
-          ...formData.mesAnual[formData.mes.nombre],
-          rol: value,
-        };
-        // Actualizar el valor de rol en el mes seleccionado
-        const updatedMes = {
-          ...formData.mesAnual[formData.mes.nombre],
-          rol: value,
-        };
-        const updatedMeses = {
-          ...formData.mesAnual,
-          [formData.mes.nombre]: updatedMes,
-        };
-        setFormData((formData) => ({
-          ...formData,
-          rol: value,
-          mesAnual: updatedMeses,
-          bonoHora,
-          retencionISR,
-          retencionAdicionalISR,
-          valesDespensa,
-          sueldoTotal,
-        }));
-      }
+      setFormData((formData) => ({
+        ...formData,
+        [name]: value,
+      }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const { numeroEmpleado, nombreCompleto, rol, mes } = formData;
-    const { horasTrabajadas, entregas, nombre } = mes;
-
-    // Convertir la cantidad de entregas en un número
-    const cantidadEntregas = Number(entregas);
-
-    // Calcular el pago por entregas
-    const pagoEntregas = cantidadEntregas * 5.0;
-
-    // Calcular el bono por hora
-    let bonoHora = 0;
-    switch (rol) {
-      case 'Chofer':
-        bonoHora = 10.0;
-        break;
-      case 'Cargador':
-        bonoHora = 5.0;
-        break;
-      default:
-        break;
-    }
-
-    // Calcular el pago total del trabajador
-    const sueldoBase = horasTrabajadas * 30.0;
-    const sueldoTotal = sueldoBase + pagoEntregas + bonoHora * horasTrabajadas;
-
-    // Calcular las retenciones de ISR y vales de despensa
-    const retencionISR =
-      sueldoTotal > 10000 ? sueldoTotal * 0.12 : sueldoTotal * 0.09;
-    const retencionAdicionalISR =
-      sueldoTotal > 10000 ? sueldoTotal * 0.03 : 0.0;
-    const valesDespensa = sueldoTotal * 0.04;
-
-    // Actualizar el estado del formulario con los valores calculados
-    const updatedMes = {
-      nombre,
-      horasTrabajadas,
-      entregas: cantidadEntregas,
-      pagoEntregas,
-      bonoHora,
-      retencionISR,
-      retencionAdicionalISR,
-      valesDespensa,
-      sueldoTotal,
-    };
-
-    // Cambiar updatedMeses de un arreglo a un objeto
-    const updatedMeses = { [nombre]: updatedMes };
-
-    const updatedFormData = {
-      numeroEmpleado,
-      nombreCompleto,
-      rol,
-      mes: updatedMeses,
-    };
-
     try {
-      await axios.put(
-        `${API_URL}/worker/${formData.numeroEmpleado}`,
-        updatedFormData
+      const { numeroEmpleado, nombreCompleto, rol, mes } = formData;
+      const selectedMonthName = e.currentTarget.elements['mes'].value;
+      const updatedMesData = {
+        [selectedMonthName]: {
+          entregas: formData.mes[selectedMonthName].entregas,
+        },
+      };
+      console.log('Mes actualizado:', selectedMonthName);
+      console.log(
+        'Cantidad de entregas:',
+        updatedMesData[selectedMonthName].entregas
       );
-      alert('Movimiento registrado correctamente');
+
+      const res = await axios.patch(`${API_URL}/worker/${numeroEmpleado}`, {
+        mes: updatedMesData,
+      });
+
+      console.log('Data saved:', res.data);
       setFormData({
         numeroEmpleado: '',
         nombreCompleto: '',
         rol: '',
         mes: {
-          nombre: '',
-          horasTrabajadas: 0,
-          entregas: '',
-          pagoEntregas: 0,
-          bonoHora: 0,
-          retencionISR: 0,
-          retencionAdicionalISR: 0,
-          valesDespensa: 0,
-          sueldoTotal: 0,
+          enero: { entregas: 0 },
+          febrero: { entregas: 0 },
+          marzo: { entregas: 0 },
+          abril: { entregas: 0 },
+          mayo: { entregas: 0 },
+          junio: { entregas: 0 },
+          julio: { entregas: 0 },
+          agosto: { entregas: 0 },
+          septiembre: { entregas: 0 },
+          octubre: { entregas: 0 },
+          noviembre: { entregas: 0 },
+          diciembre: { entregas: 0 },
         },
       });
     } catch (error) {
-      alert('Error al registrar el movimiento');
+      console.error(error);
     }
   };
 
@@ -424,13 +175,7 @@ export function Month() {
 
       <div className="form-group">
         <label htmlFor="mes">Mes:</label>
-        <select
-          id="mes"
-          name="mes"
-          value={formData.mes.nombre}
-          onChange={handleInputChange}
-          required
-        >
+        <select id="mes" name="mes" onChange={handleInputChange} required>
           <option value="">--Seleccione un mes--</option>
           {months.map((month: any) => (
             <option key={month.value} value={month.value}>
@@ -445,37 +190,23 @@ export function Month() {
           type="number"
           id="entregas"
           name="entregas"
-          value={formData.mes.entregas}
-          onChange={handleInputChange}
+          value={formData.mes[selectedMonthName]?.entregas ?? ''}
+          onChange={(e) =>
+            setFormData((formData) => ({
+              ...formData,
+              mes: {
+                ...formData.mes,
+                [selectedMonthName]: { entregas: parseInt(e.target.value) },
+              },
+            }))
+          }
           required
         />
       </div>
 
       <div className="form-buttons">
         <button type="submit">Guardar</button>
-        <button
-          type="button"
-          onClick={() =>
-            setFormData({
-              numeroEmpleado: '',
-              nombreCompleto: '',
-              rol: '',
-              mes: {
-                nombre: '',
-                horasTrabajadas: 0,
-                entregas: '',
-                pagoEntregas: 0,
-                bonoHora: 0,
-                retencionISR: 0,
-                retencionAdicionalISR: 0,
-                valesDespensa: 0,
-                sueldoTotal: 0,
-              },
-            })
-          }
-        >
-          Cancelar
-        </button>
+        <button type="button">Cancelar</button>
       </div>
     </form>
   );
